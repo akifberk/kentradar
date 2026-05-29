@@ -1,0 +1,20 @@
+{% extends "complaints/base.html" %}
+
+{% block title %}Sikayet Sil | KentRadar{% endblock %}
+
+{% block content %}
+<section class="form-shell">
+  <div class="form-header">
+    <p class="eyebrow">Silme onayi</p>
+    <h1>{{ complaint.title }}</h1>
+  </div>
+  <form method="post" class="complaint-form">
+    {% csrf_token %}
+    <p>Bu sikayet kaydi kalici olarak silinecek.</p>
+    <div class="form-actions">
+      <a class="outline-button" href="{% url 'complaints:detail' complaint.pk %}">Vazgec</a>
+      <button type="submit" class="danger-submit">Sil</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "complaints/base.html" %}
+
+{% block title %}Yonetim Paneli | KentRadar{% endblock %}
+
+{% block head %}
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<section class="panel-shell">
+  <div class="page-heading">
+    <p class="eyebrow">Yetkili panel</p>
+    <h1>Genel durum</h1>
+  </div>
+
+  <div class="metric-grid">
+    <div><strong>{{ total_complaints }}</strong><span>Toplam sikayet</span></div>
+    <div><strong>{{ open_complaints }}</strong><span>Acik sikayet</span></div>
+    <div><strong>{{ resolved_complaints }}</strong><span>Cozulen</span></div>
+    <div><strong>{{ user_count }}</strong><span>Kullanici</span></div>
+  </div>
+
+  <div class="chart-grid">
+    <section class="panel-box">
+      <h2>Kategori dagilimi</h2>
+      <canvas id="categoryChart"></canvas>
+    </section>
+    <section class="panel-box">
+      <h2>Aylik kayitlar</h2>
+      <canvas id="monthlyChart"></canvas>
+    </section>
+  </div>
+
+  <section class="panel-box">
+    <div class="table-heading">
+      <h2>Son sikayetler</h2>
+      <a class="outline-button" href="{% url 'complaints:report' %}">Detayli Rapor</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Baslik</th>
+            <th>Kategori</th>
+            <th>Durum</th>
+            <th>Kullanici</th>
+            <th>Tarih</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for complaint in latest_complaints %}
+            <tr>
+              <td><a href="{% url 'complaints:detail' complaint.pk %}">{{ complaint.title }}</a></td>
+              <td>{{ complaint.get_category_display }}</td>
+              <td>{{ complaint.get_status_display }}</td>
+              <td>{{ complaint.created_by|default:"-" }}</td>
+              <td>{{ complaint.created_at|date:"d.m.Y H:i" }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="5">Kayit yok.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</section>
+
+{{ category_chart|json_script:"category-chart" }}
+{{ monthly_chart|json_script:"monthly-chart" }}
+
+<script>
+  window.addEventListener("load", () => {
+    if (!window.Chart) {
+      return;
+    }
+
+    const category = JSON.parse(document.querySelector("#category-chart").textContent);
+    const monthly = JSON.parse(document.querySelector("#monthly-chart").textContent);
+
+    new Chart(document.querySelector("#categoryChart"), {
+      type: "pie",
+      data: {
+        labels: category.labels,
+        datasets: [{ data: category.data, backgroundColor: category.colors }]
+      }
+    });
+
+    new Chart(document.querySelector("#monthlyChart"), {
+      type: "bar",
+      data: {
+        labels: monthly.labels,
+        datasets: [{ label: "Kayit", data: monthly.data, backgroundColor: "#0f766e" }]
+      },
+      options: { scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+    });
+  });
+</script>
+{% endblock %}

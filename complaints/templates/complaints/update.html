@@ -1,0 +1,27 @@
+{% extends "complaints/base.html" %}
+
+{% block title %}Sikayet Duzenle | KentRadar{% endblock %}
+
+{% block content %}
+<section class="form-shell">
+  <div class="form-header">
+    <p class="eyebrow">CRUD</p>
+    <h1>Sikayeti duzenle</h1>
+  </div>
+
+  <form method="post" enctype="multipart/form-data" class="complaint-form">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+      <label class="field">
+        <span>{{ field.label }}</span>
+        {{ field }}
+        {% for error in field.errors %}
+          <small class="error">{{ error }}</small>
+        {% endfor %}
+      </label>
+    {% endfor %}
+    <button type="submit">Guncelle</button>
+  </form>
+</section>
+{% endblock %}

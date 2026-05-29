@@ -1,0 +1,57 @@
+{% extends "complaints/base.html" %}
+
+{% block title %}Detayli Rapor | KentRadar{% endblock %}
+
+{% block content %}
+<section class="panel-shell report-shell">
+  <div class="page-heading">
+    <p class="eyebrow">Detayli rapor</p>
+    <h1>Sikayet kayitlari</h1>
+  </div>
+
+  <form method="get" class="filter-form no-print">
+    {% for field in form %}
+      <label class="field compact-field">
+        <span>{{ field.label }}</span>
+        {{ field }}
+      </label>
+    {% endfor %}
+    <button type="submit">Filtrele</button>
+    <button type="button" onclick="window.print()">Yazdir / PDF</button>
+  </form>
+
+  <section class="panel-box">
+    <div class="table-heading">
+      <h2>{{ total }} kayit listeleniyor</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Baslik</th>
+            <th>Kategori</th>
+            <th>Durum</th>
+            <th>Bildiren</th>
+            <th>Tarih</th>
+            <th>Konum</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for complaint in complaints %}
+            <tr>
+              <td>{{ complaint.title }}</td>
+              <td>{{ complaint.get_category_display }}</td>
+              <td>{{ complaint.get_status_display }}</td>
+              <td>{{ complaint.reporter_name|default:"-" }}</td>
+              <td>{{ complaint.created_at|date:"d.m.Y H:i" }}</td>
+              <td>{{ complaint.latitude }}, {{ complaint.longitude }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="6">Filtreye uygun kayit bulunamadi.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</section>
+{% endblock %}

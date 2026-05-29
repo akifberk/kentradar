@@ -1,0 +1,101 @@
+{% extends "complaints/base.html" %}
+
+{% block title %}Akilli Sikayet Haritasi | KentRadar{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+  <aside class="sidebar">
+    <p class="eyebrow">Akilli sikayet haritasi</p>
+    <h1>Kent sorunlari tek haritada</h1>
+
+    <div class="stats">
+      <div>
+        <strong>{{ complaints.count }}</strong>
+        <span>Toplam bildirim</span>
+      </div>
+      <div>
+        <strong>{{ complaints|length }}</strong>
+        <span>Haritada gosterilen</span>
+      </div>
+    </div>
+
+    <div class="legend">
+      {% for item in legend %}
+        <div class="legend-item">
+          <span style="background: {{ item.color }}"></span>
+          <p>{{ item.label }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if user.is_authenticated %}
+      <a class="report-button" href="{% url 'complaints:create' %}">Yeni Sikayet Bildir</a>
+    {% else %}
+      <a class="report-button" href="{% url 'login' %}">Giris Yap ve Bildir</a>
+    {% endif %}
+  </aside>
+
+  <div id="map" class="map-panel"></div>
+</section>
+
+<script>
+  window.addEventListener("load", async () => {
+    const mapElement = document.querySelector("#map");
+
+    if (!window.L) {
+      mapElement.innerHTML = '<div class="map-error">Harita kutuphanesi yuklenemedi. Internet baglantisini kontrol edip sayfayi yenileyin.</div>';
+      return;
+    }
+
+    const escapeHtml = (value) => {
+      const div = document.createElement("div");
+      div.textContent = value;
+      return div.innerHTML;
+    };
+
+    const map = L.map("map").setView([41.0082, 28.9784], 12);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap"
+    }).addTo(map);
+
+    const response = await fetch("{% url 'complaints:data' %}");
+    const payload = await response.json();
+    const bounds = [];
+
+    payload.complaints.forEach((complaint) => {
+      const marker = L.circleMarker([complaint.latitude, complaint.longitude], {
+        radius: 11,
+        color: "#111827",
+        weight: 2,
+        fillColor: complaint.color,
+        fillOpacity: 0.92
+      }).addTo(map);
+
+      const image = complaint.photo_url
+        ? `<img class="popup-photo" src="${escapeHtml(complaint.photo_url)}" alt="${escapeHtml(complaint.title)}">`
+        : "";
+
+      marker.bindPopup(`
+        <article class="popup">
+          ${image}
+          <strong>${escapeHtml(complaint.title)}</strong>
+          <span>${escapeHtml(complaint.category_label)} - ${escapeHtml(complaint.created_at)}</span>
+          <p>${escapeHtml(complaint.description)}</p>
+        </article>
+      `);
+      bounds.push([complaint.latitude, complaint.longitude]);
+    });
+
+    if (bounds.length) {
+      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+    }
+  });
+</script>
+{% endblock %}

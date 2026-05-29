@@ -1,0 +1,29 @@
+{% extends "complaints/base.html" %}
+
+{% block title %}Kayit Ol | KentRadar{% endblock %}
+
+{% block content %}
+<section class="form-shell auth-shell">
+  <div class="form-header">
+    <p class="eyebrow">Yeni hesap</p>
+    <h1>KentRadar hesabinizi olusturun</h1>
+  </div>
+
+  <form method="post" class="complaint-form">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    {% for field in form %}
+      <label class="field">
+        <span>{{ field.label }}</span>
+        {{ field }}
+        {% for error in field.errors %}
+          <small class="error">{{ error }}</small>
+        {% endfor %}
+      </label>
+    {% endfor %}
+
+    <button type="submit">Kayit Ol</button>
+  </form>
+</section>
+{% endblock %}

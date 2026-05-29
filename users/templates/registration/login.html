@@ -1,0 +1,27 @@
+{% extends "complaints/base.html" %}
+
+{% block title %}Giris | KentRadar{% endblock %}
+
+{% block content %}
+<section class="form-shell auth-shell">
+  <div class="form-header">
+    <p class="eyebrow">Giris</p>
+    <h1>Hesabiniza giris yapin</h1>
+  </div>
+
+  <form method="post" class="complaint-form">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <label class="field">
+      <span>Kullanici adi</span>
+      {{ form.username }}
+    </label>
+    <label class="field">
+      <span>Sifre</span>
+      {{ form.password }}
+    </label>
+    <button type="submit">Giris Yap</button>
+    <a class="text-link" href="{% url 'password_reset' %}">Sifremi unuttum</a>
+  </form>
+</section>
+{% endblock %}

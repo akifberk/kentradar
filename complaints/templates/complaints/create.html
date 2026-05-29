@@ -1,0 +1,64 @@
+{% extends "complaints/base.html" %}
+
+{% block title %}Sikayet Bildir | KentRadar{% endblock %}
+
+{% block content %}
+<section class="form-shell">
+  <div class="form-header">
+    <p class="eyebrow">Mobil bildirim</p>
+    <h1>Bulundugunuz noktadaki sorunu bildirin</h1>
+  </div>
+
+  <form method="post" enctype="multipart/form-data" class="complaint-form">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    {% for field in form %}
+      <label class="field">
+        <span>{{ field.label }}</span>
+        {{ field }}
+        {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+        {% for error in field.errors %}
+          <small class="error">{{ error }}</small>
+        {% endfor %}
+      </label>
+    {% endfor %}
+
+    <div class="form-actions">
+      <button type="button" id="locate-button">Konumumu Al</button>
+      <button type="submit">Haritaya Gonder</button>
+    </div>
+  </form>
+</section>
+
+<script>
+  const locateButton = document.querySelector("#locate-button");
+  const latInput = document.querySelector("#id_latitude");
+  const lngInput = document.querySelector("#id_longitude");
+
+  locateButton.addEventListener("click", () => {
+    if (!navigator.geolocation) {
+      alert("Tarayiciniz konum bilgisini desteklemiyor.");
+      return;
+    }
+
+    locateButton.disabled = true;
+    locateButton.textContent = "Konum aliniyor";
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        latInput.value = position.coords.latitude.toFixed(6);
+        lngInput.value = position.coords.longitude.toFixed(6);
+        locateButton.disabled = false;
+        locateButton.textContent = "Konumumu Al";
+      },
+      () => {
+        alert("Konum alinamadi. Enlem ve boylami elle girebilirsiniz.");
+        locateButton.disabled = false;
+        locateButton.textContent = "Konumumu Al";
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  });
+</script>
+{% endblock %}
