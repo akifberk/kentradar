@@ -2,7 +2,9 @@ import json
 import os
 
 from django.contrib import messages
+from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.models import User
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
@@ -13,6 +15,7 @@ from django.views.decorators.http import require_http_methods
 
 from .forms import ComplaintForm, ComplaintStaffForm, ReportFilterForm
 from .models import Complaint
+from users.models import MobileAuthToken, UserProfile
 
 
 def is_staff_user(user):
@@ -40,13 +43,52 @@ def serialize_complaint(complaint):
     }
 
 
+def parse_payload(request):
+    if request.content_type == "application/json":
+        try:
+            return json.loads(request.body.decode("utf-8")) if request.body else {}
+        except json.JSONDecodeError:
+            return None
+    return request.POST
+
+
+def serialize_user(user):
+    role = getattr(getattr(user, "profile", None), "role", UserProfile.Role.ADMIN if user.is_staff else UserProfile.Role.STANDARD)
+    return {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "is_staff": user.is_staff,
+        "role": role,
+    }
+
+
+def mobile_user(request):
+    if request.user.is_authenticated:
+        return request.user
+
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Token "):
+        key = auth_header.removeprefix("Token ").strip()
+        token = MobileAuthToken.objects.select_related("user").filter(key=key).first()
+        if token:
+            return token.user
+
+    return None
+
+
 def mobile_api_allowed(request):
     api_key = os.environ.get("MOBILE_API_KEY")
-    if request.user.is_authenticated:
+    if mobile_user(request):
         return True
     if api_key and request.headers.get("X-API-Key") == api_key:
         return True
     return False
+
+
+def mobile_staff_required(request):
+    user = mobile_user(request)
+    return user if user and user.is_staff else None
 
 
 def complaint_map(request):
@@ -141,22 +183,190 @@ def complaint_api(request):
         return JsonResponse({"error": "API icin giris veya gecerli X-API-Key gerekli."}, status=403)
 
     if request.method == "POST":
-        try:
-            payload = json.loads(request.body.decode("utf-8")) if request.body else request.POST
-        except json.JSONDecodeError:
+        payload = parse_payload(request)
+        if payload is None:
             return JsonResponse({"error": "Gecersiz JSON."}, status=400)
 
-        form = ComplaintForm(payload)
+        form = ComplaintForm(payload, request.FILES)
         if form.is_valid():
             complaint = form.save(commit=False)
-            if request.user.is_authenticated:
-                complaint.created_by = request.user
+            user = mobile_user(request)
+            if user:
+                complaint.created_by = user
+                if not complaint.reporter_name:
+                    complaint.reporter_name = user.get_username()
             complaint.save()
             return JsonResponse({"complaint": serialize_complaint(complaint)}, status=201)
 
         return JsonResponse({"errors": form.errors}, status=400)
 
     return JsonResponse({"error": "Bu method desteklenmiyor."}, status=405)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def mobile_register(request):
+    payload = parse_payload(request)
+    if payload is None:
+        return JsonResponse({"error": "Gecersiz JSON."}, status=400)
+
+    username = payload.get("username", "").strip()
+    email = payload.get("email", "").strip()
+    password = payload.get("password", "")
+    phone = payload.get("phone", "").strip()
+
+    if not username or not email or not password:
+        return JsonResponse({"error": "Kullanici adi, e-posta ve sifre zorunlu."}, status=400)
+    if len(password) < 8:
+        return JsonResponse({"error": "Sifre en az 8 karakter olmalidir."}, status=400)
+    if User.objects.filter(username=username).exists():
+        return JsonResponse({"error": "Bu kullanici adi kullaniliyor."}, status=400)
+    if User.objects.filter(email=email).exists():
+        return JsonResponse({"error": "Bu e-posta kullaniliyor."}, status=400)
+
+    user = User.objects.create_user(username=username, email=email, password=password)
+    UserProfile.objects.update_or_create(
+        user=user,
+        defaults={"role": UserProfile.Role.STANDARD, "phone": phone},
+    )
+    token = MobileAuthToken.create_for_user(user)
+    return JsonResponse({"token": token.key, "user": serialize_user(user)}, status=201)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def mobile_login(request):
+    payload = parse_payload(request)
+    if payload is None:
+        return JsonResponse({"error": "Gecersiz JSON."}, status=400)
+
+    username = payload.get("username", "").strip()
+    password = payload.get("password", "")
+    user = authenticate(username=username, password=password)
+    if not user:
+        return JsonResponse({"error": "Kullanici adi veya sifre hatali."}, status=400)
+
+    token = MobileAuthToken.create_for_user(user)
+    return JsonResponse({"token": token.key, "user": serialize_user(user)})
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def mobile_logout(request):
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Token "):
+        MobileAuthToken.objects.filter(key=auth_header.removeprefix("Token ").strip()).delete()
+    return JsonResponse({"success": True})
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def mobile_password_reset(request):
+    payload = parse_payload(request)
+    if payload is None:
+        return JsonResponse({"error": "Gecersiz JSON."}, status=400)
+
+    form = PasswordResetForm({"email": payload.get("email", "")})
+    if form.is_valid():
+        form.save(request=request)
+        return JsonResponse({"success": True})
+    return JsonResponse({"errors": form.errors}, status=400)
+
+
+@csrf_exempt
+@require_http_methods(["GET", "PATCH", "DELETE"])
+def complaint_api_detail(request, pk):
+    complaint = get_object_or_404(Complaint, pk=pk)
+
+    if request.method == "GET":
+        return JsonResponse({"complaint": serialize_complaint(complaint)})
+
+    user = mobile_user(request)
+    if not user or not can_manage_complaint(user, complaint):
+        return JsonResponse({"error": "Bu islem icin yetkiniz yok."}, status=403)
+
+    if request.method == "DELETE":
+        complaint.delete()
+        return JsonResponse({"success": True})
+
+    payload = parse_payload(request)
+    if payload is None:
+        return JsonResponse({"error": "Gecersiz JSON."}, status=400)
+
+    form_class = ComplaintStaffForm if user.is_staff else ComplaintForm
+    data = {
+        "title": complaint.title,
+        "description": complaint.description,
+        "category": complaint.category,
+        "latitude": complaint.latitude,
+        "longitude": complaint.longitude,
+        "reporter_name": complaint.reporter_name,
+    }
+    if user.is_staff:
+        data["status"] = complaint.status
+    data.update(payload)
+
+    form = form_class(data, request.FILES, instance=complaint)
+    if form.is_valid():
+        complaint = form.save()
+        return JsonResponse({"complaint": serialize_complaint(complaint)})
+    return JsonResponse({"errors": form.errors}, status=400)
+
+
+@require_http_methods(["GET"])
+def mobile_panel_api(request):
+    user = mobile_staff_required(request)
+    if not user:
+        return JsonResponse({"error": "Yetkili kullanici gerekli."}, status=403)
+
+    category_counts = list(
+        Complaint.objects.values("category").annotate(total=Count("id")).order_by("category")
+    )
+    return JsonResponse(
+        {
+            "total_complaints": Complaint.objects.count(),
+            "open_complaints": Complaint.objects.filter(status=Complaint.Status.OPEN).count(),
+            "resolved_complaints": Complaint.objects.filter(status=Complaint.Status.RESOLVED).count(),
+            "user_count": User.objects.count(),
+            "category_chart": {
+                "labels": [Complaint.Category(item["category"]).label for item in category_counts],
+                "data": [item["total"] for item in category_counts],
+            },
+            "latest_complaints": [
+                serialize_complaint(complaint)
+                for complaint in Complaint.objects.select_related("created_by")[:10]
+            ],
+        }
+    )
+
+
+@require_http_methods(["GET"])
+def mobile_report_api(request):
+    user = mobile_staff_required(request)
+    if not user:
+        return JsonResponse({"error": "Yetkili kullanici gerekli."}, status=403)
+
+    complaints = Complaint.objects.select_related("created_by").all()
+    start_date = request.GET.get("start_date")
+    end_date = request.GET.get("end_date")
+    category = request.GET.get("category")
+    status = request.GET.get("status")
+
+    if start_date:
+        complaints = complaints.filter(created_at__date__gte=start_date)
+    if end_date:
+        complaints = complaints.filter(created_at__date__lte=end_date)
+    if category:
+        complaints = complaints.filter(category=category)
+    if status:
+        complaints = complaints.filter(status=status)
+
+    return JsonResponse(
+        {
+            "total": complaints.count(),
+            "complaints": [serialize_complaint(complaint) for complaint in complaints],
+        }
+    )
 
 
 @user_passes_test(is_staff_user)

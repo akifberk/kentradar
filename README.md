@@ -27,6 +27,19 @@ Adresler:
 
 Mobil uygulamadan yetkili POST atmak icin `MOBILE_API_KEY` belirleyin ve istege `X-API-Key` header'i olarak ekleyin. Giris yapmis web kullanicilari da API uzerinden kayit olusturabilir.
 
+Flutter uygulamasi icin token tabanli endpointler:
+
+- `POST /api/mobile/register/`
+- `POST /api/mobile/login/`
+- `POST /api/mobile/logout/`
+- `POST /api/mobile/password-reset/`
+- `GET,POST /api/mobile/complaints/`
+- `GET,PATCH,DELETE /api/mobile/complaints/<id>/`
+- `GET /api/mobile/panel/`
+- `GET /api/mobile/report/?start_date=2026-05-01&end_date=2026-05-31&category=road&status=open`
+
+Login/register cevabindaki token sonraki isteklerde `Authorization: Token TOKEN_DEGERI` header'i ile gonderilir.
+
 ## Render Ornek Komutlari
 
 Build command:
@@ -48,6 +61,7 @@ gunicorn kentradar.wsgi:application
 - Roller: Admin/staff ve standart kullanici profilleri
 - CRUD: `/bildir/`, `/sikayet/<id>/`, duzenle ve sil ekranlari
 - Mobil API: `/api/mobile/complaints/`
+- Mobil Auth API: `/api/mobile/register/`, `/api/mobile/login/`, `/api/mobile/password-reset/`
 - Yetkili panel: `/panel/`
 - Grafik: panelde kategori pasta grafik ve aylik kayit sutun grafik
 - Rapor: `/rapor/`, tarih/kategori/durum filtresi ve Yazdir/PDF butonu

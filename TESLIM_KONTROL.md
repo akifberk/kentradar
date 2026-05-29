@@ -10,7 +10,7 @@
 | Model/veritabani | Tamam | `Complaint`, `UserProfile`, SQLite/migration |
 | CRUD | Tamam | Sikayet ekle, detay, duzenle, sil |
 | Form validation | Tamam | Zorunlu alanlar, kategori secimi, enlem/boylam siniri |
-| Mobil API | Tamam | `/api/mobile/complaints/`, `X-API-Key` veya login |
+| Mobil API | Tamam | Token auth, `/api/mobile/register/`, `/api/mobile/login/`, `/api/mobile/complaints/` |
 | Yetkili panel | Tamam | `/panel/`, sadece staff |
 | Grafik | Tamam | Panelde pasta ve sutun grafik |
 | Detayli rapor | Tamam | `/rapor/` |
@@ -29,3 +29,33 @@
 5. Grafik ve son sikayetleri goster.
 6. `/rapor/` ekraninda tarih veya kategori filtresi uygula.
 7. `Yazdir / PDF` butonuyla raporu PDF'e kaydet.
+
+## Flutter Icin API Notlari
+
+Login/register cevabinda gelen token saklanir ve sonraki isteklerde su header ile gonderilir:
+
+```text
+Authorization: Token TOKEN_DEGERI
+```
+
+Ana endpointler:
+
+- `POST /api/mobile/register/`
+- `POST /api/mobile/login/`
+- `POST /api/mobile/logout/`
+- `POST /api/mobile/password-reset/`
+- `GET,POST /api/mobile/complaints/`
+- `GET,PATCH,DELETE /api/mobile/complaints/<id>/`
+- `GET /api/mobile/panel/`
+- `GET /api/mobile/report/`
+
+Flutter rubrigi icin onerilen klasor yapisi:
+
+```text
+lib/
+  models/
+  views/
+  controllers/
+  services/
+  widgets/
+```
