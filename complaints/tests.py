@@ -53,4 +53,38 @@ class ComplaintViewsTests(TestCase):
         response = self.client.get(reverse("complaints:panel"))
         self.assertEqual(response.status_code, 200)
 
+    def test_mobile_api_post_requires_authorization(self):
+        response = self.client.post(
+            reverse("complaints:mobile_api"),
+            data={
+                "title": "Yetkisiz bildirim",
+                "description": "Bu kayit reddedilmeli.",
+                "category": Complaint.Category.OTHER,
+                "latitude": "41.008200",
+                "longitude": "28.978400",
+            },
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_mobile_api_post_accepts_logged_in_user(self):
+        User.objects.create_user(username="mobil", password="StrongPass123")
+        self.client.login(username="mobil", password="StrongPass123")
+
+        response = self.client.post(
+            reverse("complaints:mobile_api"),
+            data={
+                "title": "Mobil API bildirimi",
+                "description": "Uygulama dersinden gelen kayit.",
+                "category": Complaint.Category.ROAD,
+                "latitude": "41.008200",
+                "longitude": "28.978400",
+            },
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(Complaint.objects.filter(title="Mobil API bildirimi").exists())
+
 # Create your tests here.

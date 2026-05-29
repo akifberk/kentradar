@@ -1,4 +1,5 @@
 import json
+import os
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -8,6 +9,7 @@ from django.db.models.functions import TruncMonth
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 
 from .forms import ComplaintForm, ComplaintStaffForm, ReportFilterForm
 from .models import Complaint
@@ -36,6 +38,15 @@ def serialize_complaint(complaint):
         "photo_url": complaint.photo.url if complaint.photo else "",
         "created_at": complaint.created_at.strftime("%d.%m.%Y %H:%M"),
     }
+
+
+def mobile_api_allowed(request):
+    api_key = os.environ.get("MOBILE_API_KEY")
+    if request.user.is_authenticated:
+        return True
+    if api_key and request.headers.get("X-API-Key") == api_key:
+        return True
+    return False
 
 
 def complaint_map(request):
@@ -120,14 +131,18 @@ def complaint_data(request):
 
 
 @csrf_exempt
+@require_http_methods(["GET", "POST"])
 def complaint_api(request):
     if request.method == "GET":
         complaints = Complaint.objects.all()
         return JsonResponse({"complaints": [serialize_complaint(complaint) for complaint in complaints]})
 
+    if not mobile_api_allowed(request):
+        return JsonResponse({"error": "API icin giris veya gecerli X-API-Key gerekli."}, status=403)
+
     if request.method == "POST":
         try:
-            payload = json.loads(request.body.decode("utf-8"))
+            payload = json.loads(request.body.decode("utf-8")) if request.body else request.POST
         except json.JSONDecodeError:
             return JsonResponse({"error": "Gecersiz JSON."}, status=400)
 

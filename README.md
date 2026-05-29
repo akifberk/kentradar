@@ -25,6 +25,8 @@ Adresler:
 
 `DEBUG=False` yapildiginda `SECRET_KEY`, `ALLOWED_HOSTS` ve `CSRF_TRUSTED_ORIGINS` degerlerini canli domaininize gore girin.
 
+Mobil uygulamadan yetkili POST atmak icin `MOBILE_API_KEY` belirleyin ve istege `X-API-Key` header'i olarak ekleyin. Giris yapmis web kullanicilari da API uzerinden kayit olusturabilir.
+
 ## Render Ornek Komutlari
 
 Build command:
@@ -38,3 +40,15 @@ Start command:
 ```bash
 gunicorn kentradar.wsgi:application
 ```
+
+## Teslim Kontrol
+
+- Login/Register: `/hesap/login/`, `/kullanici/kayit/`
+- Sifre sifirlama: `/hesap/password_reset/`
+- Roller: Admin/staff ve standart kullanici profilleri
+- CRUD: `/bildir/`, `/sikayet/<id>/`, duzenle ve sil ekranlari
+- Mobil API: `/api/mobile/complaints/`
+- Yetkili panel: `/panel/`
+- Grafik: panelde kategori pasta grafik ve aylik kayit sutun grafik
+- Rapor: `/rapor/`, tarih/kategori/durum filtresi ve Yazdir/PDF butonu
+- Harita: `/`, kategori renklerine gore baloncuklar
