@@ -21,4 +21,6 @@ urlpatterns = [
     path("api/mobile/complaints/<int:pk>/", views.complaint_api_detail, name="mobile_api_detail"),
     path("api/mobile/panel/", views.mobile_panel_api, name="mobile_panel_api"),
     path("api/mobile/report/", views.mobile_report_api, name="mobile_report_api"),
+    path("api/mobile/users/", views.mobile_users_api, name="mobile_users_api"),
+    path("api/mobile/users/<int:pk>/", views.mobile_user_detail_api, name="mobile_user_detail_api"),
 ]

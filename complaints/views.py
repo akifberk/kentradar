@@ -54,12 +54,16 @@ def parse_payload(request):
 
 def serialize_user(user):
     role = getattr(getattr(user, "profile", None), "role", UserProfile.Role.ADMIN if user.is_staff else UserProfile.Role.STANDARD)
+    profile = getattr(user, "profile", None)
     return {
         "id": user.id,
         "username": user.username,
         "email": user.email,
         "is_staff": user.is_staff,
         "role": role,
+        "phone": profile.phone if profile else "",
+        "is_active": user.is_active,
+        "date_joined": user.date_joined.strftime("%d.%m.%Y"),
     }
 
 
@@ -367,6 +371,52 @@ def mobile_report_api(request):
             "complaints": [serialize_complaint(complaint) for complaint in complaints],
         }
     )
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def mobile_users_api(request):
+    user = mobile_staff_required(request)
+    if not user:
+        return JsonResponse({"error": "Yetkili kullanici gerekli."}, status=403)
+
+    users = User.objects.select_related("profile").order_by("username")
+    return JsonResponse({"users": [serialize_user(item) for item in users]})
+
+
+@csrf_exempt
+@require_http_methods(["PATCH", "DELETE"])
+def mobile_user_detail_api(request, pk):
+    staff = mobile_staff_required(request)
+    if not staff:
+        return JsonResponse({"error": "Yetkili kullanici gerekli."}, status=403)
+
+    target = get_object_or_404(User.objects.select_related("profile"), pk=pk)
+    if request.method == "DELETE":
+        if target.id == staff.id:
+            return JsonResponse({"error": "Kendi hesabinizi silemezsiniz."}, status=400)
+        target.delete()
+        return JsonResponse({"success": True})
+
+    payload = parse_payload(request)
+    if payload is None:
+        return JsonResponse({"error": "Gecersiz JSON."}, status=400)
+
+    if "is_staff" in payload:
+        target.is_staff = bool(payload["is_staff"])
+        target.save(update_fields=["is_staff"])
+
+    if "role" in payload:
+        profile, _ = UserProfile.objects.get_or_create(user=target)
+        profile.role = payload["role"]
+        profile.save(update_fields=["role"])
+
+    if "is_active" in payload:
+        target.is_active = bool(payload["is_active"])
+        target.save(update_fields=["is_active"])
+
+    target.refresh_from_db()
+    return JsonResponse({"user": serialize_user(target)})
 
 
 @user_passes_test(is_staff_user)
