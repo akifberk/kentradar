@@ -1,0 +1,30 @@
+databases:
+  - name: kentradar-db
+    plan: free
+    databaseName: kentradar
+    user: kentradar
+
+services:
+  - type: web
+    name: kentradar
+    runtime: python
+    plan: free
+    buildCommand: ./build.sh
+    startCommand: gunicorn kentradar.wsgi:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: DATABASE_URL
+        fromDatabase:
+          name: kentradar-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://*.onrender.com"
+      - key: WEB_CONCURRENCY
+        value: "4"

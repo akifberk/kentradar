@@ -42,6 +42,10 @@ Login/register cevabindaki token sonraki isteklerde `Authorization: Token TOKEN_
 
 ## Render Ornek Komutlari
 
+Bu repo Render Blueprint ile hazirlanmistir. GitHub/GitLab/Bitbucket reposuna push ettikten sonra Render Dashboard > Blueprints > New Blueprint Instance adimindan repoyu secin ve `render.yaml` dosyasini uygulatin. Render web servisini, Postgres veritabanini ve gerekli ortam degiskenlerini otomatik olusturur.
+
+Blueprint disinda manuel kurulum yapmak isterseniz:
+
 Build command:
 
 ```bash
@@ -53,6 +57,23 @@ Start command:
 ```bash
 gunicorn kentradar.wsgi:application
 ```
+
+Gerekli ortam degiskenleri:
+
+- `DATABASE_URL`: Render Postgres internal connection string
+- `SECRET_KEY`: Render uzerinden uretilmis gizli anahtar
+- `DEBUG=False`
+- `ALLOWED_HOSTS=.onrender.com` veya kendi domaininiz
+- `CSRF_TRUSTED_ORIGINS=https://*.onrender.com` veya kendi domaininizin HTTPS adresi
+- `MOBILE_API_KEY`: Mobil uygulama icin ortak API anahtari
+
+Canli URL olustuktan sonra Render Shell'de admin kullanici olusturun:
+
+```bash
+python manage.py createsuperuser
+```
+
+Not: Render'in gecici dosya sistemi yuklenen medya dosyalarini kalici tutmaz. Sikayet fotograflarini kalici saklamak icin production ortaminda S3/Cloudinary gibi harici medya depolama ekleyin veya uygun Render disk plani kullanin.
 
 ## Teslim Kontrol
 
