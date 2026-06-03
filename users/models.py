@@ -6,15 +6,15 @@ from django.utils.crypto import get_random_string
 class UserProfile(models.Model):
     class Role(models.TextChoices):
         ADMIN = "admin", "Admin"
-        STANDARD = "standard", "Standart Kullanici"
+        STANDARD = "standard", "Standart Kullanıcı"
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.STANDARD)
     phone = models.CharField("Telefon", max_length=20, blank=True)
 
     class Meta:
-        verbose_name = "Kullanici profili"
-        verbose_name_plural = "Kullanici profilleri"
+        verbose_name = "Kullanıcı profili"
+        verbose_name_plural = "Kullanıcı profilleri"
 
     def __str__(self):
         return f"{self.user.username} - {self.get_role_display()}"

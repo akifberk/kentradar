@@ -11,7 +11,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, "Kaydiniz olusturuldu.")
+            messages.success(request, "Kaydınız oluşturuldu.")
             return redirect("complaints:map")
     else:
         form = RegisterForm()

@@ -16,24 +16,24 @@ class ComplaintForm(forms.ModelForm):
             "reporter_name",
         ]
         widgets = {
-            "title": forms.TextInput(attrs={"placeholder": "Orn. Kaldirimda cukur var"}),
-            "description": forms.Textarea(attrs={"rows": 4, "placeholder": "Sorunu kisaca anlatin"}),
+            "title": forms.TextInput(attrs={"placeholder": "Örn. Kaldırımda çukur var"}),
+            "description": forms.Textarea(attrs={"rows": 4, "placeholder": "Sorunu kısaca anlatın"}),
             "photo": forms.ClearableFileInput(attrs={"accept": "image/*", "capture": "environment"}),
             "latitude": forms.NumberInput(attrs={"step": "any", "inputmode": "decimal"}),
             "longitude": forms.NumberInput(attrs={"step": "any", "inputmode": "decimal"}),
-            "reporter_name": forms.TextInput(attrs={"placeholder": "Istege bagli"}),
+            "reporter_name": forms.TextInput(attrs={"placeholder": "İsteğe bağlı"}),
         }
 
     def clean_latitude(self):
         latitude = self.cleaned_data["latitude"]
         if not -90 <= latitude <= 90:
-            raise forms.ValidationError("Enlem -90 ile 90 arasinda olmalidir.")
+            raise forms.ValidationError("Enlem -90 ile 90 arasında olmalıdır.")
         return latitude
 
     def clean_longitude(self):
         longitude = self.cleaned_data["longitude"]
         if not -180 <= longitude <= 180:
-            raise forms.ValidationError("Boylam -180 ile 180 arasinda olmalidir.")
+            raise forms.ValidationError("Boylam -180 ile 180 arasında olmalıdır.")
         return longitude
 
 
@@ -45,12 +45,12 @@ class ComplaintStaffForm(ComplaintForm):
 class ReportFilterForm(forms.Form):
     start_date = forms.DateField(
         required=False,
-        label="Baslangic tarihi",
+        label="Başlangıç tarihi",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
     end_date = forms.DateField(
         required=False,
-        label="Bitis tarihi",
+        label="Bitiş tarihi",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
     category = forms.ChoiceField(required=False, label="Kategori")
@@ -58,5 +58,5 @@ class ReportFilterForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["category"].choices = [("", "Tum kategoriler")] + list(Complaint.Category.choices)
-        self.fields["status"].choices = [("", "Tum durumlar")] + list(Complaint.Status.choices)
+        self.fields["category"].choices = [("", "Tüm kategoriler")] + list(Complaint.Category.choices)
+        self.fields["status"].choices = [("", "Tüm durumlar")] + list(Complaint.Status.choices)

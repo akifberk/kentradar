@@ -1,12 +1,12 @@
 {% extends "complaints/base.html" %}
 
-{% block title %}Detayli Rapor | KentRadar{% endblock %}
+{% block title %}Detaylı Rapor | KentRadar{% endblock %}
 
 {% block content %}
 <section class="panel-shell report-shell">
   <div class="page-heading">
-    <p class="eyebrow">Detayli rapor</p>
-    <h1>Sikayet kayitlari</h1>
+    <p class="eyebrow">Detaylı rapor</p>
+    <h1>Şikayet kayıtları</h1>
   </div>
 
   <form method="get" class="filter-form no-print">
@@ -17,18 +17,18 @@
       </label>
     {% endfor %}
     <button type="submit">Filtrele</button>
-    <button type="button" onclick="window.print()">Yazdir / PDF</button>
+    <button type="button" onclick="window.print()">Yazdır / PDF</button>
   </form>
 
   <section class="panel-box">
     <div class="table-heading">
-      <h2>{{ total }} kayit listeleniyor</h2>
+      <h2>{{ total }} kayıt listeleniyor</h2>
     </div>
     <div class="table-wrap">
       <table>
         <thead>
           <tr>
-            <th>Baslik</th>
+            <th>Başlık</th>
             <th>Kategori</th>
             <th>Durum</th>
             <th>Bildiren</th>
@@ -47,7 +47,7 @@
               <td>{{ complaint.latitude }}, {{ complaint.longitude }}</td>
             </tr>
           {% empty %}
-            <tr><td colspan="6">Filtreye uygun kayit bulunamadi.</td></tr>
+            <tr><td colspan="6">Filtreye uygun kayıt bulunamadı.</td></tr>
           {% endfor %}
         </tbody>
       </table>

@@ -121,7 +121,7 @@ def complaint_create(request):
             if not complaint.reporter_name:
                 complaint.reporter_name = request.user.get_username()
             complaint.save()
-            messages.success(request, "Sikayetiniz haritaya eklendi.")
+            messages.success(request, "Şikayetiniz haritaya eklendi.")
             return redirect("complaints:detail", pk=complaint.pk)
     else:
         form = ComplaintForm()
@@ -133,7 +133,7 @@ def complaint_create(request):
 def complaint_detail(request, pk):
     complaint = get_object_or_404(Complaint, pk=pk)
     if not can_manage_complaint(request.user, complaint):
-        return HttpResponseForbidden("Bu kaydi goruntuleme yetkiniz yok.")
+        return HttpResponseForbidden("Bu kaydı görüntüleme yetkiniz yok.")
     return render(request, "complaints/detail.html", {"complaint": complaint})
 
 
@@ -141,14 +141,14 @@ def complaint_detail(request, pk):
 def complaint_update(request, pk):
     complaint = get_object_or_404(Complaint, pk=pk)
     if not can_manage_complaint(request.user, complaint):
-        return HttpResponseForbidden("Bu kaydi guncelleme yetkiniz yok.")
+        return HttpResponseForbidden("Bu kaydı güncelleme yetkiniz yok.")
 
     form_class = ComplaintStaffForm if request.user.is_staff else ComplaintForm
     if request.method == "POST":
         form = form_class(request.POST, request.FILES, instance=complaint)
         if form.is_valid():
             form.save()
-            messages.success(request, "Sikayet guncellendi.")
+            messages.success(request, "Şikayet güncellendi.")
             return redirect("complaints:detail", pk=complaint.pk)
     else:
         form = form_class(instance=complaint)
@@ -160,11 +160,11 @@ def complaint_update(request, pk):
 def complaint_delete(request, pk):
     complaint = get_object_or_404(Complaint, pk=pk)
     if not can_manage_complaint(request.user, complaint):
-        return HttpResponseForbidden("Bu kaydi silme yetkiniz yok.")
+        return HttpResponseForbidden("Bu kaydı silme yetkiniz yok.")
 
     if request.method == "POST":
         complaint.delete()
-        messages.success(request, "Sikayet silindi.")
+        messages.success(request, "Şikayet silindi.")
         return redirect("complaints:panel" if request.user.is_staff else "complaints:map")
 
     return render(request, "complaints/delete.html", {"complaint": complaint})
@@ -184,12 +184,12 @@ def complaint_api(request):
         return JsonResponse({"complaints": [serialize_complaint(complaint) for complaint in complaints]})
 
     if not mobile_api_allowed(request):
-        return JsonResponse({"error": "API icin giris veya gecerli X-API-Key gerekli."}, status=403)
+        return JsonResponse({"error": "API için giriş veya geçerli X-API-Key gerekli."}, status=403)
 
     if request.method == "POST":
         payload = parse_payload(request)
         if payload is None:
-            return JsonResponse({"error": "Gecersiz JSON."}, status=400)
+            return JsonResponse({"error": "Geçersiz JSON."}, status=400)
 
         form = ComplaintForm(payload, request.FILES)
         if form.is_valid():
@@ -204,7 +204,7 @@ def complaint_api(request):
 
         return JsonResponse({"errors": form.errors}, status=400)
 
-    return JsonResponse({"error": "Bu method desteklenmiyor."}, status=405)
+        return JsonResponse({"error": "Bu metot desteklenmiyor."}, status=405)
 
 
 @csrf_exempt
@@ -212,7 +212,7 @@ def complaint_api(request):
 def mobile_register(request):
     payload = parse_payload(request)
     if payload is None:
-        return JsonResponse({"error": "Gecersiz JSON."}, status=400)
+        return JsonResponse({"error": "Geçersiz JSON."}, status=400)
 
     username = payload.get("username", "").strip()
     email = payload.get("email", "").strip()
@@ -220,13 +220,13 @@ def mobile_register(request):
     phone = payload.get("phone", "").strip()
 
     if not username or not email or not password:
-        return JsonResponse({"error": "Kullanici adi, e-posta ve sifre zorunlu."}, status=400)
+        return JsonResponse({"error": "Kullanıcı adı, e-posta ve şifre zorunlu."}, status=400)
     if len(password) < 8:
-        return JsonResponse({"error": "Sifre en az 8 karakter olmalidir."}, status=400)
+        return JsonResponse({"error": "Şifre en az 8 karakter olmalıdır."}, status=400)
     if User.objects.filter(username=username).exists():
-        return JsonResponse({"error": "Bu kullanici adi kullaniliyor."}, status=400)
+        return JsonResponse({"error": "Bu kullanıcı adı kullanılıyor."}, status=400)
     if User.objects.filter(email=email).exists():
-        return JsonResponse({"error": "Bu e-posta kullaniliyor."}, status=400)
+        return JsonResponse({"error": "Bu e-posta kullanılıyor."}, status=400)
 
     user = User.objects.create_user(username=username, email=email, password=password)
     UserProfile.objects.update_or_create(
@@ -242,13 +242,13 @@ def mobile_register(request):
 def mobile_login(request):
     payload = parse_payload(request)
     if payload is None:
-        return JsonResponse({"error": "Gecersiz JSON."}, status=400)
+        return JsonResponse({"error": "Geçersiz JSON."}, status=400)
 
     username = payload.get("username", "").strip()
     password = payload.get("password", "")
     user = authenticate(username=username, password=password)
     if not user:
-        return JsonResponse({"error": "Kullanici adi veya sifre hatali."}, status=400)
+        return JsonResponse({"error": "Kullanıcı adı veya şifre hatalı."}, status=400)
 
     token = MobileAuthToken.create_for_user(user)
     return JsonResponse({"token": token.key, "user": serialize_user(user)})
@@ -268,7 +268,7 @@ def mobile_logout(request):
 def mobile_password_reset(request):
     payload = parse_payload(request)
     if payload is None:
-        return JsonResponse({"error": "Gecersiz JSON."}, status=400)
+        return JsonResponse({"error": "Geçersiz JSON."}, status=400)
 
     form = PasswordResetForm({"email": payload.get("email", "")})
     if form.is_valid():
@@ -287,7 +287,7 @@ def complaint_api_detail(request, pk):
 
     user = mobile_user(request)
     if not user or not can_manage_complaint(user, complaint):
-        return JsonResponse({"error": "Bu islem icin yetkiniz yok."}, status=403)
+        return JsonResponse({"error": "Bu işlem için yetkiniz yok."}, status=403)
 
     if request.method == "DELETE":
         complaint.delete()
@@ -295,7 +295,7 @@ def complaint_api_detail(request, pk):
 
     payload = parse_payload(request)
     if payload is None:
-        return JsonResponse({"error": "Gecersiz JSON."}, status=400)
+        return JsonResponse({"error": "Geçersiz JSON."}, status=400)
 
     form_class = ComplaintStaffForm if user.is_staff else ComplaintForm
     data = {
@@ -321,7 +321,7 @@ def complaint_api_detail(request, pk):
 def mobile_panel_api(request):
     user = mobile_staff_required(request)
     if not user:
-        return JsonResponse({"error": "Yetkili kullanici gerekli."}, status=403)
+        return JsonResponse({"error": "Yetkili kullanıcı gerekli."}, status=403)
 
     category_counts = list(
         Complaint.objects.values("category").annotate(total=Count("id")).order_by("category")
@@ -348,7 +348,7 @@ def mobile_panel_api(request):
 def mobile_report_api(request):
     user = mobile_staff_required(request)
     if not user:
-        return JsonResponse({"error": "Yetkili kullanici gerekli."}, status=403)
+        return JsonResponse({"error": "Yetkili kullanıcı gerekli."}, status=403)
 
     complaints = Complaint.objects.select_related("created_by").all()
     start_date = request.GET.get("start_date")
@@ -378,7 +378,7 @@ def mobile_report_api(request):
 def mobile_users_api(request):
     user = mobile_staff_required(request)
     if not user:
-        return JsonResponse({"error": "Yetkili kullanici gerekli."}, status=403)
+        return JsonResponse({"error": "Yetkili kullanıcı gerekli."}, status=403)
 
     users = User.objects.select_related("profile").order_by("username")
     return JsonResponse({"users": [serialize_user(item) for item in users]})
@@ -389,18 +389,18 @@ def mobile_users_api(request):
 def mobile_user_detail_api(request, pk):
     staff = mobile_staff_required(request)
     if not staff:
-        return JsonResponse({"error": "Yetkili kullanici gerekli."}, status=403)
+        return JsonResponse({"error": "Yetkili kullanıcı gerekli."}, status=403)
 
     target = get_object_or_404(User.objects.select_related("profile"), pk=pk)
     if request.method == "DELETE":
         if target.id == staff.id:
-            return JsonResponse({"error": "Kendi hesabinizi silemezsiniz."}, status=400)
+            return JsonResponse({"error": "Kendi hesabınızı silemezsiniz."}, status=400)
         target.delete()
         return JsonResponse({"success": True})
 
     payload = parse_payload(request)
     if payload is None:
-        return JsonResponse({"error": "Gecersiz JSON."}, status=400)
+        return JsonResponse({"error": "Geçersiz JSON."}, status=400)
 
     if "is_staff" in payload:
         target.is_staff = bool(payload["is_staff"])

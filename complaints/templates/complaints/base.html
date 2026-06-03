@@ -14,7 +14,7 @@
     <nav>
       <a href="{% url 'complaints:map' %}">Harita</a>
       {% if user.is_authenticated %}
-        <a href="{% url 'complaints:create' %}">Sikayet Bildir</a>
+        <a href="{% url 'complaints:create' %}">Şikayet Bildir</a>
         {% if user.is_staff %}
           <a href="{% url 'complaints:panel' %}">Panel</a>
           <a href="{% url 'complaints:report' %}">Rapor</a>
@@ -22,11 +22,11 @@
         {% endif %}
         <form method="post" action="{% url 'logout' %}" class="nav-form">
           {% csrf_token %}
-          <button type="submit" class="link-button">Cikis</button>
+          <button type="submit" class="link-button">Çıkış</button>
         </form>
       {% else %}
-        <a href="{% url 'login' %}">Giris</a>
-        <a class="primary-link" href="{% url 'users:register' %}">Kayit Ol</a>
+        <a href="{% url 'login' %}">Giriş</a>
+        <a class="primary-link" href="{% url 'users:register' %}">Kayıt Ol</a>
       {% endif %}
     </nav>
   </header>

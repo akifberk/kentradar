@@ -1,6 +1,6 @@
 {% extends "complaints/base.html" %}
 
-{% block title %}Akilli Sikayet Haritasi | KentRadar{% endblock %}
+{% block title %}Akıllı Şikayet Haritası | KentRadar{% endblock %}
 
 {% block head %}
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -10,8 +10,8 @@
 {% block content %}
 <section class="dashboard">
   <aside class="sidebar">
-    <p class="eyebrow">Akilli sikayet haritasi</p>
-    <h1>Kent sorunlari tek haritada</h1>
+    <p class="eyebrow">Akıllı şikayet haritası</p>
+    <h1>Kent sorunları tek haritada</h1>
 
     <div class="stats">
       <div>
@@ -20,7 +20,7 @@
       </div>
       <div>
         <strong>{{ complaints|length }}</strong>
-        <span>Haritada gosterilen</span>
+        <span>Haritada gösterilen</span>
       </div>
     </div>
 
@@ -34,9 +34,9 @@
     </div>
 
     {% if user.is_authenticated %}
-      <a class="report-button" href="{% url 'complaints:create' %}">Yeni Sikayet Bildir</a>
+      <a class="report-button" href="{% url 'complaints:create' %}">Yeni Şikayet Bildir</a>
     {% else %}
-      <a class="report-button" href="{% url 'login' %}">Giris Yap ve Bildir</a>
+      <a class="report-button" href="{% url 'login' %}">Giriş Yap ve Bildir</a>
     {% endif %}
   </aside>
 
@@ -48,7 +48,7 @@
     const mapElement = document.querySelector("#map");
 
     if (!window.L) {
-      mapElement.innerHTML = '<div class="map-error">Harita kutuphanesi yuklenemedi. Internet baglantisini kontrol edip sayfayi yenileyin.</div>';
+      mapElement.innerHTML = '<div class="map-error">Harita kütüphanesi yüklenemedi. İnternet bağlantısını kontrol edip sayfayı yenileyin.</div>';
       return;
     }
 

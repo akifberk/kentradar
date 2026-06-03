@@ -1,6 +1,6 @@
 {% extends "complaints/base.html" %}
 
-{% block title %}Yonetim Paneli | KentRadar{% endblock %}
+{% block title %}Yönetim Paneli | KentRadar{% endblock %}
 
 {% block head %}
   <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -14,36 +14,36 @@
   </div>
 
   <div class="metric-grid">
-    <div><strong>{{ total_complaints }}</strong><span>Toplam sikayet</span></div>
-    <div><strong>{{ open_complaints }}</strong><span>Acik sikayet</span></div>
-    <div><strong>{{ resolved_complaints }}</strong><span>Cozulen</span></div>
-    <div><strong>{{ user_count }}</strong><span>Kullanici</span></div>
+    <div><strong>{{ total_complaints }}</strong><span>Toplam şikayet</span></div>
+    <div><strong>{{ open_complaints }}</strong><span>Açık şikayet</span></div>
+    <div><strong>{{ resolved_complaints }}</strong><span>Çözülen</span></div>
+    <div><strong>{{ user_count }}</strong><span>Kullanıcı</span></div>
   </div>
 
   <div class="chart-grid">
     <section class="panel-box">
-      <h2>Kategori dagilimi</h2>
+      <h2>Kategori dağılımı</h2>
       <canvas id="categoryChart"></canvas>
     </section>
     <section class="panel-box">
-      <h2>Aylik kayitlar</h2>
+      <h2>Aylık kayıtlar</h2>
       <canvas id="monthlyChart"></canvas>
     </section>
   </div>
 
   <section class="panel-box">
     <div class="table-heading">
-      <h2>Son sikayetler</h2>
-      <a class="outline-button" href="{% url 'complaints:report' %}">Detayli Rapor</a>
+      <h2>Son şikayetler</h2>
+      <a class="outline-button" href="{% url 'complaints:report' %}">Detaylı Rapor</a>
     </div>
     <div class="table-wrap">
       <table>
         <thead>
           <tr>
-            <th>Baslik</th>
+            <th>Başlık</th>
             <th>Kategori</th>
             <th>Durum</th>
-            <th>Kullanici</th>
+            <th>Kullanıcı</th>
             <th>Tarih</th>
           </tr>
         </thead>
@@ -57,7 +57,7 @@
               <td>{{ complaint.created_at|date:"d.m.Y H:i" }}</td>
             </tr>
           {% empty %}
-            <tr><td colspan="5">Kayit yok.</td></tr>
+            <tr><td colspan="5">Kayıt yok.</td></tr>
           {% endfor %}
         </tbody>
       </table>
@@ -89,7 +89,7 @@
       type: "bar",
       data: {
         labels: monthly.labels,
-        datasets: [{ label: "Kayit", data: monthly.data, backgroundColor: "#0f766e" }]
+        datasets: [{ label: "Kayıt", data: monthly.data, backgroundColor: "#0f766e" }]
       },
       options: { scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
     });

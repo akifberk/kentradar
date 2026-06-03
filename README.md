@@ -1,6 +1,6 @@
 # KentRadar
 
-KentRadar, vatandas sikayetlerini konum, fotograf, kategori ve aciklama ile toplayan; yetkili kullanicilara harita, panel, grafik ve rapor ekranlari sunan Django projesidir.
+KentRadar, vatandaş şikayetlerini konum, fotoğraf, kategori ve açıklama ile toplayan; yetkili kullanıcılara harita, panel, grafik ve rapor ekranları sunan Django projesidir.
 
 ## Yerelde Calistirma
 
@@ -14,20 +14,20 @@ python manage.py runserver
 Adresler:
 
 - Harita: `http://127.0.0.1:8000/`
-- Sikayet bildir: `http://127.0.0.1:8000/bildir/`
+- Şikayet bildir: `http://127.0.0.1:8000/bildir/`
 - Panel: `http://127.0.0.1:8000/panel/`
 - Rapor: `http://127.0.0.1:8000/rapor/`
 - Admin: `http://127.0.0.1:8000/admin/`
 
 ## Deploy Ortam Degiskenleri
 
-`.env.example` dosyasindaki degerleri hosting panelindeki environment variables alanina ekleyin.
+`.env.example` dosyasındaki değerleri hosting panelindeki environment variables alanına ekleyin.
 
-`DEBUG=False` yapildiginda `SECRET_KEY`, `ALLOWED_HOSTS` ve `CSRF_TRUSTED_ORIGINS` degerlerini canli domaininize gore girin.
+`DEBUG=False` yapıldığında `SECRET_KEY`, `ALLOWED_HOSTS` ve `CSRF_TRUSTED_ORIGINS` değerlerini canlı domaininize göre girin.
 
-Mobil uygulamadan yetkili POST atmak icin `MOBILE_API_KEY` belirleyin ve istege `X-API-Key` header'i olarak ekleyin. Giris yapmis web kullanicilari da API uzerinden kayit olusturabilir.
+Mobil uygulamadan yetkili POST atmak için `MOBILE_API_KEY` belirleyin ve isteğe `X-API-Key` header'ı olarak ekleyin. Giriş yapmış web kullanıcıları da API üzerinden kayıt oluşturabilir.
 
-Flutter uygulamasi icin token tabanli endpointler:
+Flutter uygulaması için token tabanlı endpointler:
 
 - `POST /api/mobile/register/`
 - `POST /api/mobile/login/`
@@ -42,7 +42,7 @@ Login/register cevabindaki token sonraki isteklerde `Authorization: Token TOKEN_
 
 ## Render Ornek Komutlari
 
-Bu repo Render Blueprint ile hazirlanmistir. GitHub/GitLab/Bitbucket reposuna push ettikten sonra Render Dashboard > Blueprints > New Blueprint Instance adimindan repoyu secin ve `render.yaml` dosyasini uygulatin. Render web servisini, Postgres veritabanini ve gerekli ortam degiskenlerini otomatik olusturur.
+Bu repo Render Blueprint ile hazırlanmıştır. GitHub/GitLab/Bitbucket reposuna push ettikten sonra Render Dashboard > Blueprints > New Blueprint Instance adımından repoyu seçin ve `render.yaml` dosyasını uygulatın. Render web servisini, Postgres veritabanını ve gerekli ortam değişkenlerini otomatik oluşturur.
 
 Blueprint disinda manuel kurulum yapmak isterseniz:
 
@@ -58,32 +58,32 @@ Start command:
 gunicorn kentradar.wsgi:application
 ```
 
-Gerekli ortam degiskenleri:
+Gerekli ortam değişkenleri:
 
 - `DATABASE_URL`: Render Postgres internal connection string
 - `SECRET_KEY`: Render uzerinden uretilmis gizli anahtar
 - `DEBUG=False`
 - `ALLOWED_HOSTS=.onrender.com` veya kendi domaininiz
 - `CSRF_TRUSTED_ORIGINS=https://*.onrender.com` veya kendi domaininizin HTTPS adresi
-- `MOBILE_API_KEY`: Mobil uygulama icin ortak API anahtari
+- `MOBILE_API_KEY`: Mobil uygulama için ortak API anahtarı
 
-Canli URL olustuktan sonra Render Shell'de admin kullanici olusturun:
+Canlı URL oluştuktan sonra Render Shell'de admin kullanıcı oluşturun:
 
 ```bash
 python manage.py createsuperuser
 ```
 
-Not: Render'in gecici dosya sistemi yuklenen medya dosyalarini kalici tutmaz. Sikayet fotograflarini kalici saklamak icin production ortaminda S3/Cloudinary gibi harici medya depolama ekleyin veya uygun Render disk plani kullanin.
+Not: Render'in geçici dosya sistemi yüklenen medya dosyalarını kalıcı tutmaz. Şikayet fotoğraflarını kalıcı saklamak için production ortamında S3/Cloudinary gibi harici medya depolama ekleyin veya uygun Render disk planı kullanın.
 
 ## Teslim Kontrol
 
 - Login/Register: `/hesap/login/`, `/kullanici/kayit/`
-- Sifre sifirlama: `/hesap/password_reset/`
-- Roller: Admin/staff ve standart kullanici profilleri
-- CRUD: `/bildir/`, `/sikayet/<id>/`, duzenle ve sil ekranlari
+- Şifre sıfırlama: `/hesap/password_reset/`
+- Roller: Admin/staff ve standart kullanıcı profilleri
+- CRUD: `/bildir/`, `/sikayet/<id>/`, düzenle ve sil ekranları
 - Mobil API: `/api/mobile/complaints/`
 - Mobil Auth API: `/api/mobile/register/`, `/api/mobile/login/`, `/api/mobile/password-reset/`
 - Yetkili panel: `/panel/`
-- Grafik: panelde kategori pasta grafik ve aylik kayit sutun grafik
-- Rapor: `/rapor/`, tarih/kategori/durum filtresi ve Yazdir/PDF butonu
-- Harita: `/`, kategori renklerine gore baloncuklar
+- Grafik: panelde kategori pasta grafik ve aylık kayıt sütun grafik
+- Rapor: `/rapor/`, tarih/kategori/durum filtresi ve Yazdır/PDF butonu
+- Harita: `/`, kategori renklerine göre baloncuklar

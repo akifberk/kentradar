@@ -1,6 +1,6 @@
 {% extends "complaints/base.html" %}
 
-{% block title %}Sikayet Detayi | KentRadar{% endblock %}
+{% block title %}Şikayet Detayı | KentRadar{% endblock %}
 
 {% block content %}
 <section class="detail-shell">
@@ -11,14 +11,14 @@
       <p class="muted">{{ complaint.created_at|date:"d.m.Y H:i" }} - {{ complaint.get_status_display }}</p>
     </div>
     <div class="detail-actions">
-      <a class="outline-button" href="{% url 'complaints:update' complaint.pk %}">Duzenle</a>
+      <a class="outline-button" href="{% url 'complaints:update' complaint.pk %}">Düzenle</a>
       <a class="danger-button" href="{% url 'complaints:delete' complaint.pk %}">Sil</a>
     </div>
   </div>
 
   <div class="detail-grid">
     <article class="detail-card">
-      <h2>Aciklama</h2>
+      <h2>Açıklama</h2>
       <p>{{ complaint.description }}</p>
       <dl>
         <dt>Bildiren</dt>

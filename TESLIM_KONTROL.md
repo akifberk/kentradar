@@ -4,31 +4,31 @@
 
 | Madde | Durum | Projede Karsiligi |
 | --- | --- | --- |
-| Kullanici kayit/giris | Tamam | `/kullanici/kayit/`, `/hesap/login/` |
-| Sifre sifirlama | Tamam | `/hesap/password_reset/`, SMTP ayarlari `.env.example` |
-| Roller ve yetki | Tamam | Admin/staff ve standart kullanici, `UserProfile` |
+| Kullanıcı kayıt/giriş | Tamam | `/kullanici/kayit/`, `/hesap/login/` |
+| Şifre sıfırlama | Tamam | `/hesap/password_reset/`, SMTP ayarları `.env.example` |
+| Roller ve yetki | Tamam | Admin/staff ve standart kullanıcı, `UserProfile` |
 | Model/veritabani | Tamam | `Complaint`, `UserProfile`, SQLite/migration |
-| CRUD | Tamam | Sikayet ekle, detay, duzenle, sil |
+| CRUD | Tamam | Şikayet ekle, detay, düzenle, sil |
 | Form validation | Tamam | Zorunlu alanlar, kategori secimi, enlem/boylam siniri |
 | Mobil API | Tamam | Token auth, `/api/mobile/register/`, `/api/mobile/login/`, `/api/mobile/complaints/` |
 | Yetkili panel | Tamam | `/panel/`, sadece staff |
 | Grafik | Tamam | Panelde pasta ve sutun grafik |
-| Detayli rapor | Tamam | `/rapor/` |
+| Detaylı rapor | Tamam | `/rapor/` |
 | Rapor filtreleme | Tamam | Tarih, kategori, durum |
-| Yazdir/PDF | Tamam | Rapor ekranindaki `Yazdir / PDF` butonu |
+| Yazdır/PDF | Tamam | Rapor ekranındaki `Yazdır / PDF` butonu |
 | Responsive arayuz | Tamam | CSS media query ve mobil form/harita |
 | Git/GitHub | Tamam | `https://github.com/akifberk/kentradar.git` |
 | Hosting/domain | Beklemede | Render/PythonAnywhere uzerinden yayina alinmali |
 
 ## Sunumda Gosterilecek Akis
 
-1. Standart kullanici kaydi olustur.
-2. Giris yapip `/bildir/` ekranindan sikayet ekle.
-3. Haritada renkli sikayet baloncugunu goster.
+1. Standart kullanıcı kaydı oluştur.
+2. Giriş yapıp `/bildir/` ekranından şikayet ekle.
+3. Haritada renkli şikayet baloncuğunu göster.
 4. Admin/staff hesabi ile `/panel/` ekranina gir.
-5. Grafik ve son sikayetleri goster.
+5. Grafik ve son şikayetleri göster.
 6. `/rapor/` ekraninda tarih veya kategori filtresi uygula.
-7. `Yazdir / PDF` butonuyla raporu PDF'e kaydet.
+7. `Yazdır / PDF` butonuyla raporu PDF'e kaydet.
 
 ## Flutter Icin API Notlari
 
@@ -49,7 +49,7 @@ Ana endpointler:
 - `GET /api/mobile/panel/`
 - `GET /api/mobile/report/`
 
-Flutter rubrigi icin onerilen klasor yapisi:
+Flutter rubriği için önerilen klasör yapısı:
 
 ```text
 lib/

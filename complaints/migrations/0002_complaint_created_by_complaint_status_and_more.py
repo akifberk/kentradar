@@ -16,16 +16,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='complaint',
             name='created_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='complaints', to=settings.AUTH_USER_MODEL, verbose_name='Kaydi olusturan'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='complaints', to=settings.AUTH_USER_MODEL, verbose_name='Kaydı oluşturan'),
         ),
         migrations.AddField(
             model_name='complaint',
             name='status',
-            field=models.CharField(choices=[('open', 'Acik'), ('in_progress', 'Islemde'), ('resolved', 'Cozuldu')], default='open', max_length=20, verbose_name='Durum'),
+            field=models.CharField(choices=[('open', 'Açık'), ('in_progress', 'İşlemde'), ('resolved', 'Çözüldü')], default='open', max_length=20, verbose_name='Durum'),
         ),
         migrations.AddField(
             model_name='complaint',
             name='updated_at',
-            field=models.DateTimeField(auto_now=True, verbose_name='Guncelleme zamani'),
+            field=models.DateTimeField(auto_now=True, verbose_name='Güncelleme zamanı'),
         ),
     ]

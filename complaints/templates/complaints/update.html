@@ -1,12 +1,12 @@
 {% extends "complaints/base.html" %}
 
-{% block title %}Sikayet Duzenle | KentRadar{% endblock %}
+{% block title %}Şikayet Düzenle | KentRadar{% endblock %}
 
 {% block content %}
 <section class="form-shell">
   <div class="form-header">
     <p class="eyebrow">CRUD</p>
-    <h1>Sikayeti duzenle</h1>
+    <h1>Şikayeti düzenle</h1>
   </div>
 
   <form method="post" enctype="multipart/form-data" class="complaint-form">
@@ -21,7 +21,7 @@
         {% endfor %}
       </label>
     {% endfor %}
-    <button type="submit">Guncelle</button>
+    <button type="submit">Güncelle</button>
   </form>
 </section>
 {% endblock %}

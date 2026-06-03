@@ -20,15 +20,15 @@ class ComplaintViewsTests(TestCase):
 
     def test_complaint_data_returns_active_complaints(self):
         Complaint.objects.create(
-            title="Bozuk sokak lambasi",
-            description="Park girisindeki lamba yanmiyor.",
+            title="Bozuk sokak lambası",
+            description="Park girişindeki lamba yanmıyor.",
             category=Complaint.Category.LIGHTING,
             latitude="41.008200",
             longitude="28.978400",
         )
         Complaint.objects.create(
-            title="Cozulmus bildirim",
-            description="Bu kayit haritada gorunmemeli.",
+            title="Çözülmüş bildirim",
+            description="Bu kayıt haritada görünmemeli.",
             category=Complaint.Category.OTHER,
             latitude="41.010000",
             longitude="28.980000",
@@ -60,7 +60,7 @@ class ComplaintViewsTests(TestCase):
             reverse("complaints:mobile_api"),
             data=json.dumps({
                 "title": "Yetkisiz bildirim",
-                "description": "Bu kayit reddedilmeli.",
+                "description": "Bu kayıt reddedilmeli.",
                 "category": Complaint.Category.OTHER,
                 "latitude": "41.008200",
                 "longitude": "28.978400",
@@ -78,7 +78,7 @@ class ComplaintViewsTests(TestCase):
             reverse("complaints:mobile_api"),
             data=json.dumps({
                 "title": "Mobil API bildirimi",
-                "description": "Uygulama dersinden gelen kayit.",
+                "description": "Uygulama dersinden gelen kayıt.",
                 "category": Complaint.Category.ROAD,
                 "latitude": "41.008200",
                 "longitude": "28.978400",
@@ -125,7 +125,7 @@ class ComplaintViewsTests(TestCase):
         create_response = self.client.post(
             reverse("complaints:mobile_api"),
             data=json.dumps({
-                "title": "Token kaydi",
+                "title": "Token kaydı",
                 "description": "Token ile eklendi.",
                 "category": Complaint.Category.WATER,
                 "latitude": "41.008200",
@@ -141,8 +141,8 @@ class ComplaintViewsTests(TestCase):
         update_response = self.client.patch(
             reverse("complaints:mobile_api_detail", args=[complaint_id]),
             data=json.dumps({
-                "title": "Token kaydi guncel",
-                "description": "Token ile guncellendi.",
+                "title": "Token kaydı güncel",
+                "description": "Token ile güncellendi.",
                 "category": Complaint.Category.WATER,
                 "latitude": "41.008200",
                 "longitude": "28.978400",
@@ -152,7 +152,7 @@ class ComplaintViewsTests(TestCase):
         )
 
         self.assertEqual(update_response.status_code, 200)
-        self.assertEqual(update_response.json()["complaint"]["title"], "Token kaydi guncel")
+        self.assertEqual(update_response.json()["complaint"]["title"], "Token kaydı güncel")
 
         delete_response = self.client.delete(
             reverse("complaints:mobile_api_detail", args=[complaint_id]),

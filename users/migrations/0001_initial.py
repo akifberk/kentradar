@@ -18,13 +18,13 @@ class Migration(migrations.Migration):
             name='UserProfile',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('role', models.CharField(choices=[('admin', 'Admin'), ('standard', 'Standart Kullanici')], default='standard', max_length=20)),
+                ('role', models.CharField(choices=[('admin', 'Admin'), ('standard', 'Standart Kullanıcı')], default='standard', max_length=20)),
                 ('phone', models.CharField(blank=True, max_length=20, verbose_name='Telefon')),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='profile', to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                'verbose_name': 'Kullanici profili',
-                'verbose_name_plural': 'Kullanici profilleri',
+                'verbose_name': 'Kullanıcı profili',
+                'verbose_name_plural': 'Kullanıcı profilleri',
             },
         ),
     ]
